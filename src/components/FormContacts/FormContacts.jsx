@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, nanoid } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact } from '../../redux/sliceContacts/sliceContacts';
 
+import { addStoreContacts } from '../../redux/operations/operations';
+import { getContacts } from '../../redux/selectors/selectors';
 import { Form, Label, InputContact } from './FormContacts.styled';
 
 export default function FormContacts() {
-  const contacts = useSelector(state => state.contacts);
+  const contacts = useSelector(getContacts);
   const dispatch = useDispatch();
 
   const [name, setName] = useState('');
@@ -29,8 +30,8 @@ export default function FormContacts() {
   };
 
   const handlSubmit = () => {
-    console.log(name, number);
-    dispatch(addContact(name, number));
+    const contact = { name, number };
+    dispatch(addStoreContacts(contact));
     setName('');
     setNumver('');
   };
@@ -40,7 +41,7 @@ export default function FormContacts() {
 
     const normalizedFilter = name.toLocaleLowerCase();
 
-    const checkName = contacts.contacts.some(
+    const checkName = contacts.some(
       contact => contact.name.toLocaleLowerCase() === normalizedFilter
     );
 

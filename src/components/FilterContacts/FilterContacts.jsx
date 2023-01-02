@@ -15,7 +15,6 @@ const FilterContacts = ({ textTitel }) => {
       <InputFilter
         type="text"
         name="filter"
-        // value={filter}
         onChange={e =>
           dispatch(filterContacts(e.currentTarget.value.toLocaleLowerCase()))
         }
