@@ -1,6 +1,10 @@
-import { createSlice, nanoid } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
-import { requestContacts } from 'redux/operations/operations';
+import {
+  requestContacts,
+  addStoreContacts,
+  removeContact,
+} from 'redux/operations/operations';
 
 const initialState = {
   contacts: [],
@@ -8,61 +12,50 @@ const initialState = {
   error: null,
 };
 
+const handlePending = state => {
+  state.isLoading = true;
+};
+
+const handleRejected = (state, action) => {
+  state.isLoading = false;
+  state.error = action.payload;
+};
+
 const sliceContacts = createSlice({
   name: 'contacts',
   initialState: initialState,
 
   extraReducers: {
-    [requestContacts.pending](state, action) {
-      state.isLoading = true;
-    },
+    [requestContacts.pending]: handlePending,
+    [requestContacts.rejected]: handleRejected,
+
+    [addStoreContacts.pending]: handlePending,
+    [addStoreContacts.rejected]: handleRejected,
+
+    [removeContact.pending]: handlePending,
+    [removeContact.rejected]: handleRejected,
+
     [requestContacts.fulfilled](state, action) {
       state.isLoading = false;
       state.error = null;
       state.contacts = action.payload;
     },
-    [requestContacts.rejected](state, action) {
+
+    [addStoreContacts.fulfilled](state, action) {
       state.isLoading = false;
-      state.error = action.payload;
+      state.error = null;
+      state.contacts.push(action.payload);
+    },
+
+    [removeContact.fulfilled](state, action) {
+      state.isLoading = false;
+      state.error = null;
+      const index = state.contacts.findIndex(
+        contact => contact.id === action.payload.id
+      );
+      state.contacts.splice(index, 1);
     },
   },
-  // reducers: {
-  //   addContact: {
-  //     reducer(state, action) {
-  //       state.contacts.push(action.payload);
-  //     },
-  //     prepare(name, number) {
-  //       return { payload: { id: nanoid(), name, number } };
-  //     },
-  //   },
-
-  //   deleteContact(state, action) {
-  //     const index = state.contacts.findIndex(
-  //       contact => contact.id === action.payload
-  //     );
-  //     state.contacts.splice(index, 1);
-  //   },
-
-  //   fetchingInProgress(state) {
-  //     state.isLoading = true;
-  //   },
-  //   fetchingSuccess(state, action) {
-  //     state.isLoading = false;
-  //     state.error = null;
-  //     state.items = action.payload;
-  //   },
-  //   fetchingError(state, action) {
-  //     state.isLoading = false;
-  //     state.error = action.payload;
-  //   },
-  // },
 });
 
-export const {
-  addContact,
-  deleteContact,
-  fetchingError,
-  fetchingSuccess,
-  fetchingInProgress,
-} = sliceContacts.actions;
 export const contactReducer = sliceContacts.reducer;

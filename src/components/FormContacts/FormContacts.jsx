@@ -1,8 +1,9 @@
-import { useState, nanoid } from 'react';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { addStoreContacts } from '../../redux/operations/operations';
 import { getContacts } from '../../redux/selectors/selectors';
+
 import { Form, Label, InputContact } from './FormContacts.styled';
 
 export default function FormContacts() {
